@@ -5,6 +5,9 @@ on:
     branches:
     - main
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,25 +33,13 @@ jobs:
       run: |
         zip ../${{ steps.repository_info.outputs.ID }}-${{steps.repository_info.outputs.VERSION}}.zip -r *
 
-    - name: Create Release and Upload Asset
-      if: ${{ steps.repository_info.outputs.NEEDS_RELEASE == 'true' }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # Map variables to env to safely handle special chars like '+'
-        TAG_NAME: ${{ steps.repository_info.outputs.VERSION }}
-        FILE_PATH: ${{ steps.repository_info.outputs.ID }}-${{ steps.repository_info.outputs.VERSION }}.zip
-      run: |
-        gh release create "$TAG_NAME" "$FILE_PATH" \
-          --title "Release $TAG_NAME" \
-          --generate-notes
-
-    # - name: Upload files to a GitHub release
-    #   uses: svenstaro/upload-release-action@v2
-    #   if: ${{ steps.repository_info.outputs.NEEDS_RELEASE == 'true'}}
-    #   with:
-    #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-    #     tag: ${{steps.repository_info.outputs.VERSION}}
-    #     file: ${{ steps.repository_info.outputs.ID }}-${{steps.repository_info.outputs.VERSION}}.zip
+    - name: Upload files to a GitHub release
+      uses: svenstaro/upload-release-action@v2
+      if: ${{ steps.repository_info.outputs.NEEDS_RELEASE == 'true'}}
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        tag: ${{steps.repository_info.outputs.VERSION}}
+        file: ${{ steps.repository_info.outputs.ID }}-${{steps.repository_info.outputs.VERSION}}.zip
 
     - name: Generate SHA256 and PACKAGE_SOURCE
       id: release_info
