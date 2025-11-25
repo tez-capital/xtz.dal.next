@@ -1,6 +1,6 @@
 {
     "id": "xtz.dal.next" ,
-    "version" : "24.0.4+beta1_T",
+    "version" : "24.0.5+beta1_T",
     "dependencies": [
         { "id":"xtz.dal" }
     ]
